@@ -4,7 +4,7 @@
 composer require yzh52521/filesystem
 ```
 
-请修改config/plugin/yzh52521/filesystem 下的配置文件
+配置文件在 config/plugin/yzh52521/filesystem 下
 
 ```
 return [
