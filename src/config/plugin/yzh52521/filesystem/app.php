@@ -5,7 +5,8 @@ return [
     'storage' => [
         'local'  => [
             'driver' => \yzh52521\Filesystem\Adapter\LocalAdapter::class,
-            'root'   => public_path(),
+            'root'   => public_path().'/storage',
+            'url'    => '/storage'
         ],
         'memory' => [
             'driver' => \yzh52521\Filesystem\Adapter\MemoryAdapter::class,
