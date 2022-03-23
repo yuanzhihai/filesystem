@@ -120,62 +120,35 @@ composer require "yzh52521/flysystem-obs:^2.0"
 ```
 # 使用
 
-通过Filesystem::storage('local') 来调用不同的适配器
+通过Filesystem::disk('local') 来调用不同的适配器
 
+
+# 使用
 ```
-    use yzh52521\Filesystem\Filesystem;
-    public function upload(Request $request)
-    {
-        $file = $request->file('file');
-        $stream = fopen($file->getRealPath(), 'r+');
-        $path='uploads/'.$file->getUploadName();
-        Filesystem::storage('local')->writeStream(
-            $path,
-            $stream
-        );
-        fclose($stream);
-        
-        // Write Files
-        $filesystem->write('path/to/file.txt', 'contents');
-        // Add local file
-        $stream = fopen('local/path/to/file.txt', 'r+');
-        $result = $filesystem->writeStream('path/to/file.txt', $stream);
-        if (is_resource($stream)) {
-            fclose($stream);
-        }
-        // Update Files
-        $filesystem->update('path/to/file.txt', 'new contents');
-        // Check if a file exists
-        $exists = $filesystem->has('path/to/file.txt');
-        // Read Files
-        $contents = $filesystem->read('path/to/file.txt');
-        // Delete Files
-        $filesystem->delete('path/to/file.txt');
-        // Rename Files
-        $filesystem->rename('filename.txt', 'newname.txt');
-        // Copy Files
-        $filesystem->copy('filename.txt', 'duplicate.txt');
-        // list the contents
-        $filesystem->listContents('path', false);
-    }
-```
-###便捷式上传
-```
-use yzh52521\Filesystem\Facade\Storage;
-        
-        $file = $request->file('file');
-        $result = Storage::putFile('webman',$file);
-        //文件判断
-        try {
-            $result = Storage::disk('local')->size(1024*1024*5)->exts(['image/jpeg','image/gif'])->putFile('webman',$file);
-         }catch (\Exception $e){
-            print($e->getMessage());
+ use yzh52521\Filesystem\Facade\Filesystem;
+        public function upload(\support\Request $request){
+            $file = $request->file('file');
+            $result = Filesystem::putFile('webman',$file);
+            //文件判断
+            try {
+                $path = Filesystem::disk('local')->size(1024*1024*5)->exts(['image/jpeg','image/gif'])->putFile('webman',$file);
+             }catch (\Exception $e){
+                print($e->getMessage());
+             }
+            //获取上传文件
+            $fileUrl = Filesystem::url($path);    
+            
+            //指定选定器外网
+            $fileUrl = Filesystem::disk('oss')->url($path); 
          }
-       
-       获取上传文件
-       $fileUrl = Storage::url($result);      
+           
              
 ```
 
-
+###静态方法（可单独设定）
+| 方法      | 描述            | 默认                 |
+|---------|---------------|--------------------|
+| disk | 选定器           | config中配置的default  | 
+| size    | 单文件大小         | config中配置的max_size |
+| exts  | 允许上传文件类型      | config中配置的exts  |
 
