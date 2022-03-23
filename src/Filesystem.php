@@ -35,6 +35,7 @@ class Filesystem
     public function disk(string $name)
     {
         $this->adapterName = $name;
+        $this->filesystem  = $this->createFilesystem();
         return $this;
     }
 
