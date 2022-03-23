@@ -156,7 +156,7 @@ class Filesystem
      */
     private function hashName($file): string
     {
-        return date('Ymd') . DIRECTORY_SEPARATOR . md5(microtime(true) . $file->getPathname()) . '.' . $file->getUploadExtension();
+        return date('Ymd') . DIRECTORY_SEPARATOR .hash_file('md5', $file->getPathname()).'.' . $file->getUploadExtension();
     }
 
 
