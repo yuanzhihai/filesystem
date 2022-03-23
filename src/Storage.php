@@ -102,8 +102,12 @@ class Storage
     {
         if (isset($this->config['storage'][$this->adapter]['url'])) {
             return $this->concatPathToUrl($this->config['storage'][$this->adapter]['url'], $path);
+        } else {
+            if (!method_exists($this->filesystem, 'getUrl')) {
+                throw new \RuntimeException('This driver does not support retrieving URLs.');
+            }
+            return $this->filesystem->getUrl($path);
         }
-        throw new \RuntimeException('This driver does not support retrieving URLs.');
     }
 
 
