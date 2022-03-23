@@ -122,9 +122,4 @@ class Storage
         return date('Ymd') . DIRECTORY_SEPARATOR . md5(microtime(true) . $file->getPathname()) . '.' . $file->getUploadExtension();
     }
 
-    public function __call($method, $parameters)
-    {
-        return $this->filesystem->$method(...$parameters);
-    }
-
 }
