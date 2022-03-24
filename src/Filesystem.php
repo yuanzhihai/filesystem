@@ -94,7 +94,7 @@ class Filesystem
      *
      * 保存文件
      * @param string $path 路径
-     * @param File $file
+     * @param File $file 文件
      * @param array $options 参数
      * @return false|string
      */
@@ -105,10 +105,10 @@ class Filesystem
 
     /**
      * 指定文件名保存文件
-     * @param string $path
-     * @param File $file
-     * @param string $filename
-     * @param array $options
+     * @param string $path 路径
+     * @param File $file 文件
+     * @param string $filename 文件名
+     * @param array $options 参数
      * @return false|string
      */
     public function putFileAs(string $path,File $file, string $filename, array $options = [])
