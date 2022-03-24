@@ -5,6 +5,7 @@ namespace yzh52521\Filesystem;
 use yzh52521\Filesystem\Contract\AdapterInterface;
 use League\Flysystem\Config;
 use support\Container;
+use Webman\File;
 
 class Filesystem
 {
@@ -93,11 +94,11 @@ class Filesystem
      *
      * 保存文件
      * @param string $path 路径
-     * @param $file
+     * @param File $file
      * @param array $options 参数
      * @return false|string
      */
-    public function putFile(string $path, $file, array $options = [])
+    public function putFile(string $path,File $file, array $options = [])
     {
         return $this->putFileAs($path, $file, $this->hashName($file), $options);
     }
@@ -105,12 +106,12 @@ class Filesystem
     /**
      * 指定文件名保存文件
      * @param string $path
-     * @param $file
+     * @param File $file
      * @param string $filename
      * @param array $options
      * @return false|string
      */
-    public function putFileAs(string $path, $file, string $filename, array $options = [])
+    public function putFileAs(string $path,File $file, string $filename, array $options = [])
     {
         if (!empty($this->exts) && !in_array($file->getUploadMineType(), $this->exts)) {
             throw new \Exception('不允许上传文件类型' . $file->getUploadMineType());
@@ -134,6 +135,11 @@ class Filesystem
         return rtrim($url, '/') . '/' . ltrim($path, '/');
     }
 
+    /**
+     * 获取保存文件地址
+     * @param string $path
+     * @return string
+     */
     public function url(string $path): string
     {
         if (isset($this->config['storage'][$this->adapterName]['url'])) {
@@ -151,10 +157,10 @@ class Filesystem
     /**
      * 自动生成文件名
      * @access private
-     * @param  $file
+     * @param File $file
      * @return string
      */
-    private function hashName($file): string
+    private function hashName(File $file): string
     {
         return date('Ymd') . DIRECTORY_SEPARATOR .hash_file('md5', $file->getPathname()).'.' . $file->getUploadExtension();
     }
