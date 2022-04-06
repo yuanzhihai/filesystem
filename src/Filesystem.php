@@ -2,6 +2,7 @@
 
 namespace yzh52521\Filesystem;
 
+use yzh52521\Filesystem\Adapter\LocalAdapter;
 use yzh52521\Filesystem\Contract\AdapterInterface;
 use League\Flysystem\Config;
 use support\Container;
@@ -14,6 +15,10 @@ class Filesystem
     protected $size = 1024 * 1024 * 10;
     protected $exts = []; //允许上传文件类型
     protected $adapterName = '';
+    /**
+     * The Flysystem adapter implementation.
+     */
+    protected $adapter;
 
     /** @var Filesystem */
     protected $filesystem;
@@ -68,8 +73,8 @@ class Filesystem
      */
     protected function createFilesystem()
     {
-        $adapter = $this->createAdapter($this->config, $this->adapterName);
-        return new \League\Flysystem\Filesystem($adapter, $this->config['storage'][$this->adapterName] ?? []);
+        $this->adapter = $this->createAdapter($this->config, $this->adapterName);
+        return new \League\Flysystem\Filesystem($this->adapter, $this->config['storage'][$this->adapterName] ?? []);
     }
 
 
@@ -98,7 +103,7 @@ class Filesystem
      * @param array $options 参数
      * @return false|string
      */
-    public function putFile(string $path,File $file, array $options = [])
+    public function putFile(string $path, File $file, array $options = [])
     {
         return $this->putFileAs($path, $file, $this->hashName($file), $options);
     }
@@ -111,7 +116,7 @@ class Filesystem
      * @param array $options 参数
      * @return false|string
      */
-    public function putFileAs(string $path,File $file, string $filename, array $options = [])
+    public function putFileAs(string $path, File $file, string $filename, array $options = [])
     {
         if (!empty($this->exts) && !in_array($file->getUploadMineType(), $this->exts)) {
             throw new \Exception('不允许上传文件类型' . $file->getUploadMineType());
@@ -130,6 +135,15 @@ class Filesystem
         return $path;
     }
 
+    protected function getLocalUrl($path)
+    {
+        if (isset($this->config['storage'][$this->adapterName]['url'])) {
+            return $this->concatPathToUrl($this->config['storage'][$this->adapterName]['url'], $path);
+        }
+        $path = '/storage/' . $path;
+        return $path;
+    }
+
     protected function concatPathToUrl($url, $path)
     {
         return rtrim($url, '/') . '/' . ltrim($path, '/');
@@ -140,17 +154,18 @@ class Filesystem
      * @param string $path
      * @return string
      */
-    public function url(string $path): string
+    public function url(string $path):string
     {
-        if (isset($this->config['storage'][$this->adapterName]['url'])) {
-            return $this->concatPathToUrl($this->config['storage'][$this->adapterName]['url'], $path);
-        } else {
-            if (!method_exists($this->filesystem, 'getUrl')) {
-                throw new \RuntimeException('This driver does not support retrieving URLs.');
-            }
+        $adapter = $this->adapter;
+        if (method_exists($adapter, 'getUrl')) {
+            return $adapter->getUrl($path);
+        } elseif (method_exists($this->filesystem, 'getUrl')) {
             return $this->filesystem->getUrl($path);
+        } elseif ($adapter instanceof LocalAdapter) {
+            return $this->getLocalUrl($path);
+        } else {
+            throw new \RuntimeException('This driver does not support retrieving URLs.');
         }
-
     }
 
 
@@ -162,7 +177,7 @@ class Filesystem
      */
     private function hashName(File $file): string
     {
-        return date('Ymd') . DIRECTORY_SEPARATOR .hash_file('md5', $file->getPathname()).'.' . $file->getUploadExtension();
+        return date('Ymd') . DIRECTORY_SEPARATOR . hash_file('md5', $file->getPathname()) . '.' . $file->getUploadExtension();
     }
 
 
