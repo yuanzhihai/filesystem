@@ -2,7 +2,7 @@
 
 namespace yzh52521\Filesystem;
 
-use yzh52521\Filesystem\Adapter\LocalAdapter;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use yzh52521\Filesystem\Contract\AdapterInterface;
 use League\Flysystem\Config;
 use support\Container;
@@ -161,7 +161,7 @@ class Filesystem
             return $adapter->getUrl($path);
         } elseif (method_exists($this->filesystem, 'getUrl')) {
             return $this->filesystem->getUrl($path);
-        } elseif ($adapter instanceof LocalAdapter) {
+        } elseif ($adapter instanceof LocalFilesystemAdapter) {
             return $this->getLocalUrl($path);
         } else {
             throw new \RuntimeException('This driver does not support retrieving URLs.');
