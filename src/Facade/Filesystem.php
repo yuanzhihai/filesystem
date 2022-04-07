@@ -6,8 +6,6 @@ namespace yzh52521\Filesystem\Facade;
  * @see \yzh52521\Filesystem\Filesystem
  * @mixin \yzh52521\Filesystem\Filesystem
  * @method \yzh52521\Filesystem\Filesystem disk(string $name) static 设置选定器
- * @method size(string $size) static 允许单文件大小
- * @method exts(array $ext) static 允许上传文件类型
  * @method url(string $path) static 获取文件访问地址
  * @method put(string $path, $content, array $options) static 保存文件
  * @method putFile(string $path, $file, array $options) static 保存文件

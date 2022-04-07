@@ -13,8 +13,6 @@ class Filesystem
 {
 
     protected $config = [];
-    protected $size = 1024 * 1024 * 10;
-    protected $exts = []; //允许上传文件类型
     protected $adapterName = '';
     /**
      * The Flysystem adapter implementation.
@@ -28,8 +26,6 @@ class Filesystem
     {
         $this->config      = config('plugin.yzh52521.filesystem.app');
         $this->adapterName = $this->config['default'] ?? 'local';
-        $this->size        = $this->config['size'] ?? 1024 * 1024 * 10;
-        $this->exts        = $this->config['exts'] ?? [];
         $this->driver      = $this->createFilesystem();
     }
 
@@ -46,16 +42,6 @@ class Filesystem
         return $this;
     }
 
-    /**
-     * 允许上传文件类型
-     * @param array $ext
-     * @return $this
-     */
-    public function exts(array $ext)
-    {
-        $this->exts = $ext;
-        return $this;
-    }
 
     /**
      * Determine if a file or directory exists.
@@ -91,16 +77,6 @@ class Filesystem
     }
 
 
-    /**
-     * 设置允许文件大小
-     * @param int $size
-     * @return $this
-     */
-    public function size(int $size)
-    {
-        $this->size = $size;
-        return $this;
-    }
 
     /**
      * @return \League\Flysystem\Filesystem
@@ -179,12 +155,6 @@ class Filesystem
      */
     public function putFileAs(string $path, $file, string $filename, array $options = [])
     {
-        if (!empty($this->exts) && !in_array($file->getUploadMineType(), $this->exts)) {
-            throw new \Exception('不允许上传文件类型' . $file->getUploadMineType());
-        }
-        if ($file->getSize() > $this->size) {
-            throw new \Exception("上传文件超过限制");
-        }
         $stream = fopen(is_string($file) ? $file : $file->getRealPath(), 'r');
 
         $result = $this->put(

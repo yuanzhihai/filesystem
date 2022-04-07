@@ -149,6 +149,8 @@ composer require "yzh52521/flysystem-obs:^2.0"
 | 方法      | 描述            | 默认                 |
 |---------|---------------|--------------------|
 | disk | 选定器           | config中配置的default  | 
-| size    | 单文件大小         | config中配置的max_size |
-| exts  | 允许上传文件类型      | config中配置的exts  |
+| url    | 获取文件访问地址         |  |
+| putFile  | 保存文件      |   |
+| putFileAs  | 指定文件名保存文件      |   |
+| put   | 保存文件      |   |
 
