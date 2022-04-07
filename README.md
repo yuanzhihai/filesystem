@@ -130,8 +130,19 @@ composer require "yzh52521/flysystem-obs:^2.0"
             $file = $request->file('file');
             $result = Filesystem::putFile('webman',$file);
             //文件判断
+           
             try {
-                $path = Filesystem::disk('local')->size(1024*1024*5)->exts(['image/jpeg','image/gif'])->putFile('webman',$file);
+                    validate(
+                        [
+                            'image' => [
+                                // 限制文件大小(单位b)，这里限制为4M
+                                'fileSize' => 4 * 1024 * 1000,
+                                // 限制文件后缀，多个后缀以英文逗号分割
+                                'fileExt'  => 'gif,jpg,png,jpeg'
+                            ]
+                        ]
+                    )->check(['image' => $file]);
+                $path = Filesystem::disk('local')->putFile('webman',$file);
              }catch (\Exception $e){
                 print($e->getMessage());
              }
@@ -144,6 +155,14 @@ composer require "yzh52521/flysystem-obs:^2.0"
            
              
 ```
+
+>用例中使用了 validate 验证器
+ 
+ 安装 validate
+```
+ composer require "yzh52521/webman-validate"
+ ```
+
 
 ###静态方法（可单独设定）
 | 方法      | 描述            | 默认                 |
