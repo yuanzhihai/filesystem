@@ -143,7 +143,7 @@ composer require "yzh52521/flysystem-obs:^2.0"
                         ]
                     )->check(['image' => $file]);
                 $path = Filesystem::disk('local')->putFile('webman',$file);
-             }catch (\Exception $e){
+             }catch (\yzh52521\validate\exception\ValidateException | \Exception $e){
                 print($e->getMessage());
              }
             //获取上传文件
