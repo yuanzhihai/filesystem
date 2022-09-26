@@ -11,8 +11,8 @@ class QiniuAdapter implements AdapterInterface
     public function createAdapter(array $options)
     {
         return new \Overtrue\Flysystem\Qiniu\QiniuAdapter(
-            $options['accessKey'],
-            $options['secretKey'],
+            $options['access_key'],
+            $options['secret_key'],
             $options['bucket'],
             $options['domain']
         );
